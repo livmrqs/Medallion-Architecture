@@ -2,7 +2,6 @@ from pathlib import Path
 import json
 import pandas as pd
 
-
 def get_project_paths():
     """
     Resolve project directories for Bronze and Silver layers.
@@ -13,3 +12,12 @@ def get_project_paths():
     silver_dir.mkdir(parents=True, exist_ok=True)
 
     return bronze_dir, silver_dir
+
+def read_bronze_data(bronze_dir: Path) -> dict:
+    """
+    Read raw JSON file from Bronze layer.
+    """
+    file_path = bronze_dir / "bronze_issues.json"
+
+    with open(file_path, "r", encoding="utf-8") as file:
+        return json.load(file)
