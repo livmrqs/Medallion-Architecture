@@ -32,3 +32,30 @@ def get_national_holidays(year: int) -> set:
 
     return {holiday["date"] for holiday in holidays}
 
+def calculate_business_hours(start_datetime: datetime,
+                             end_datetime: datetime,
+                             holidays: set) -> float:
+    """
+    Calculate business hours between two datetimes.
+    Excludes weekends and national holidays.
+    """
+
+    if end_datetime <= start_datetime:
+        return 0.0
+
+    current = start_datetime
+    total_hours = 0.0
+
+    while current < end_datetime:
+        next_hour = current + timedelta(hours=1)
+
+        is_weekend = current.weekday() >= 5  # 5 = Saturday, 6 = Sunday
+        is_holiday = current.date().isoformat() in holidays
+
+        if not is_weekend and not is_holiday:
+            total_hours += 1
+
+        current = next_hour
+
+    return total_hours
+
