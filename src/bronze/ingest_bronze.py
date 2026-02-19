@@ -4,7 +4,6 @@ from dotenv import load_dotenv
 from azure.identity import ClientSecretCredential
 from azure.storage.blob import BlobClient
 
-
 def load_environment_variables() -> dict:
     """
     Load environment variables from .env file.
@@ -26,6 +25,7 @@ def load_environment_variables() -> dict:
         raise ValueError("Missing one or more required environment variables.")
 
     return config
+
 def get_blob_client(config: dict) -> BlobClient:
     """
     Create and return a BlobClient using Service Principal authentication.
@@ -48,10 +48,30 @@ def get_blob_client(config: dict) -> BlobClient:
 
     return blob_client
 
-
 def download_blob(blob_client: BlobClient) -> bytes:
     """
     Download the raw file from Azure Blob Storage.
     Returns the file content as bytes.
     """
     return blob_client.download_blob().readall()
+
+def save_bronze_file(data: bytes) -> None:
+    """
+    Save the raw JSON file into the Bronze layer locally.
+    """
+
+    # Resolve project root dynamically (avoids hardcoded paths)
+    base_dir = Path(__file__).resolve().parents[2]
+
+    # Create bronze directory if it does not exist
+    bronze_dir = base_dir / "data" / "bronze"
+    bronze_dir.mkdir(parents=True, exist_ok=True)
+
+    # Define output file path
+    file_path = bronze_dir / "bronze_issues.json"
+
+    # Write raw bytes into file
+    with open(file_path, "wb") as file:
+        file.write(data)
+
+    print(f"Bronze layer saved successfully at: {file_path}")
