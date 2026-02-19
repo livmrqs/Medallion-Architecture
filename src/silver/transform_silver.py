@@ -21,3 +21,33 @@ def read_bronze_data(bronze_dir: Path) -> dict:
 
     with open(file_path, "r", encoding="utf-8") as file:
         return json.load(file)
+    
+def normalize_issues(json_data: dict) -> pd.DataFrame:
+    """
+    Normalize nested JSON structure into a flat DataFrame.
+    """
+
+    # Flatten main issues structure
+    df = pd.json_normalize(
+        json_data["issues"],
+        sep="_"
+    )
+
+    # Explode nested lists (if applicable)
+    if "assignee" in df.columns:
+        df = df.explode("assignee")
+
+    if "timestamps" in df.columns:
+        df = df.explode("timestamps")
+
+    # Normalize nested assignee object
+    if "assignee" in df.columns:
+        assignee_df = pd.json_normalize(df["assignee"]).add_prefix("assignee_")
+        df = df.drop(columns=["assignee"]).reset_index(drop=True).join(assignee_df)
+
+    # Normalize nested timestamps object
+    if "timestamps" in df.columns:
+        timestamps_df = pd.json_normalize(df["timestamps"])
+        df = df.drop(columns=["timestamps"]).reset_index(drop=True).join(timestamps_df)
+
+    return df
