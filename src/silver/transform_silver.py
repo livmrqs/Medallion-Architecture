@@ -94,3 +94,13 @@ def clean_dates(df: pd.DataFrame) -> pd.DataFrame:
     df = df.dropna(subset=["created_at"])
 
     return df
+
+def save_silver_layer(df: pd.DataFrame, silver_dir: Path) -> None:
+    """
+    Persist transformed data into Silver layer using Parquet format.
+    """
+
+    output_path = silver_dir / "silver_issues.parquet"
+    df.to_parquet(output_path, index=False)
+
+    print(f"Silver layer saved successfully at: {output_path}")
