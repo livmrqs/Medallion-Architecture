@@ -4,7 +4,7 @@ import pandas as pd
 
 def get_project_paths():
     """
-    Resolve project directories for Bronze and Silver layers.
+    Resolve project directories for Bronze and Silver layers
     """
     base_dir = Path(__file__).resolve().parents[2]
     bronze_dir = base_dir / "data" / "bronze"
@@ -15,7 +15,7 @@ def get_project_paths():
 
 def read_bronze_data(bronze_dir: Path) -> dict:
     """
-    Read raw JSON file from Bronze layer.
+    Read raw JSON file from Bronze layer
     """
     file_path = bronze_dir / "bronze_issues.json"
 
@@ -24,7 +24,7 @@ def read_bronze_data(bronze_dir: Path) -> dict:
     
 def normalize_issues(json_data: dict) -> pd.DataFrame:
     """
-    Normalize nested JSON structure into a flat DataFrame.
+    Normalize nested JSON structure into a flat DataFrame
     """
 
     # Flatten main issues structure
@@ -49,5 +49,32 @@ def normalize_issues(json_data: dict) -> pd.DataFrame:
     if "timestamps" in df.columns:
         timestamps_df = pd.json_normalize(df["timestamps"])
         df = df.drop(columns=["timestamps"]).reset_index(drop=True).join(timestamps_df)
+
+    return df
+
+def standardize_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Standardize column names to snake_case
+    """
+
+    df.columns = (
+        df.columns
+        .str.lower()
+        .str.replace(".", "_", regex=False)
+        .str.replace(" ", "_", regex=False)
+    )
+
+    # Rename specific fields
+    rename_map = {
+        "id": "issue_id",
+        "fields_priority_name": "priority",
+        "fields_issuetype_name": "issue_type",
+        "fields_status_name": "status",
+        "fields_created": "created_at",
+        "fields_resolutiondate": "resolved_at",
+        "fields_assignee_displayname": "assignee_name"
+    }
+
+    df = df.rename(columns=rename_map)
 
     return df
