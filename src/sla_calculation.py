@@ -3,7 +3,7 @@ import requests
 
 def get_sla_expected_hours(priority: str) -> int:
     """
-    Return expected SLA in hours based on issue priority.
+    Return expected SLA in hours based on issue priority
     """
 
     if priority == "High":
@@ -17,8 +17,8 @@ def get_sla_expected_hours(priority: str) -> int:
 
 def get_national_holidays(year: int) -> set:
     """
-    Fetch Brazilian national holidays from public API.
-    Returns a set of dates (YYYY-MM-DD).
+    Fetch Brazilian national holidays from public API
+    Returns a set of dates (YYYY-MM-DD)
     """
 
     url = f"https://date.nager.at/api/v3/PublicHolidays/{year}/BR"
@@ -36,8 +36,8 @@ def calculate_business_hours(start_datetime: datetime,
                              end_datetime: datetime,
                              holidays: set) -> float:
     """
-    Calculate business hours between two datetimes.
-    Excludes weekends and national holidays.
+    Calculate business hours between two datetimes
+    Excludes weekends and national holidays
     """
 
     if end_datetime <= start_datetime:
@@ -59,3 +59,13 @@ def calculate_business_hours(start_datetime: datetime,
 
     return total_hours
 
+def check_sla_compliance(resolution_hours: float,
+                         sla_expected_hours: int) -> bool:
+    """
+    Check whether SLA was met
+    """
+
+    if sla_expected_hours is None:
+        return False
+
+    return resolution_hours <= sla_expected_hours
