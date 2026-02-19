@@ -78,3 +78,19 @@ def standardize_columns(df: pd.DataFrame) -> pd.DataFrame:
     df = df.rename(columns=rename_map)
 
     return df
+
+def clean_dates(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Convert date columns to UTC datetime and remove invalid records.
+    """
+
+    date_columns = ["created_at", "resolved_at"]
+
+    for col in date_columns:
+        if col in df.columns:
+            df[col] = pd.to_datetime(df[col], errors="coerce", utc=True)
+
+    # Remove records with invalid created_at
+    df = df.dropna(subset=["created_at"])
+
+    return df
