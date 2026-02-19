@@ -104,3 +104,29 @@ def save_silver_layer(df: pd.DataFrame, silver_dir: Path) -> None:
     df.to_parquet(output_path, index=False)
 
     print(f"Silver layer saved successfully at: {output_path}")
+
+def main():
+    """
+    Main execution flow for Silver transformation layer.
+    """
+
+    bronze_dir, silver_dir = get_project_paths()
+
+    # Step 1: Read raw data
+    json_data = read_bronze_data(bronze_dir)
+
+    # Step 2: Normalize nested JSON
+    df = normalize_issues(json_data)
+
+    # Step 3: Standardize column names
+    df = standardize_columns(df)
+
+    # Step 4: Clean and convert dates
+    df = clean_dates(df)
+
+    # Step 5: Save Silver dataset
+    save_silver_layer(df, silver_dir)
+
+
+if __name__ == "__main__":
+    main()
