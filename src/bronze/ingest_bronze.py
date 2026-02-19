@@ -75,3 +75,24 @@ def save_bronze_file(data: bytes) -> None:
         file.write(data)
 
     print(f"Bronze layer saved successfully at: {file_path}")
+
+def main():
+    """
+    Main execution flow for Bronze ingestion layer.
+    """
+
+    # Step 1: Load configuration
+    config = load_environment_variables()
+
+    # Step 2: Create Blob client
+    blob_client = get_blob_client(config)
+
+    # Step 3: Download raw data
+    raw_data = download_blob(blob_client)
+
+    # Step 4: Persist data locally in Bronze layer
+    save_bronze_file(raw_data)
+
+
+if __name__ == "__main__":
+    main()
