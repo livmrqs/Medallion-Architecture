@@ -26,3 +26,32 @@ def load_environment_variables() -> dict:
         raise ValueError("Missing one or more required environment variables.")
 
     return config
+def get_blob_client(config: dict) -> BlobClient:
+    """
+    Create and return a BlobClient using Service Principal authentication.
+    """
+
+    # Create Azure credential using Service Principal
+    credential = ClientSecretCredential(
+        tenant_id=config["tenant_id"],
+        client_id=config["client_id"],
+        client_secret=config["client_secret"],
+    )
+
+    # Create BlobClient to access the specific blob
+    blob_client = BlobClient(
+        account_url=config["account_url"],
+        container_name=config["container_name"],
+        blob_name=config["blob_name"],
+        credential=credential,
+    )
+
+    return blob_client
+
+
+def download_blob(blob_client: BlobClient) -> bytes:
+    """
+    Download the raw file from Azure Blob Storage.
+    Returns the file content as bytes.
+    """
+    return blob_client.download_blob().readall()
