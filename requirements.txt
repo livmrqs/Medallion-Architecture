@@ -1,0 +1,6 @@
+azure-identity==1.17.1
+azure-storage-blob==12.19.1
+python-dotenv==1.0.1
+pandas==2.2.2
+pyarrow==15.0.2
+requests==2.32.3
